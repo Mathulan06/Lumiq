@@ -152,17 +152,17 @@ const Index = () => (
             </motion.div>
           </div>
 
-          {/* Row 1 — flex-based asymmetric layout (reliable height) */}
-          <div className="flex flex-col md:flex-row gap-3 md:h-[500px]">
+          {/* Row 1 — asymmetric: big card left, two portrait cards right */}
+          <div className="flex flex-col md:flex-row gap-3">
 
-            {/* Big card — 2/3 width on desktop */}
+            {/* Big card — 2/3 width, landscape 4/3 */}
             {featBig && (
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 aspect-[4/3] md:aspect-auto md:flex-[2]"
+                className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 md:flex-[2]"
               >
                 <Link to="/gallery" className="absolute inset-0">
                   <img
@@ -180,7 +180,7 @@ const Index = () => (
               </motion.div>
             )}
 
-            {/* Right column — 1/3 width, two equal stacked cards */}
+            {/* Right column — 1/3 width, each card uses same 4/3 ratio */}
             <div className="flex flex-col gap-3 md:flex-1">
               {featPair.map((src, i) => (
                 <motion.div
@@ -189,13 +189,13 @@ const Index = () => (
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.12 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 aspect-[4/3] md:aspect-auto md:flex-1"
+                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                 >
                   <Link to="/gallery" className="absolute inset-0">
                     <img
                       src={src}
                       alt={i === 0 ? "Nature" : "Street"}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-5">
                       <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
