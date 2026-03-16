@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import SectionHeading from "@/components/SectionHeading";
-import aboutPhoto from "@/assets/hero-3.JPG";
+import aboutPhoto from "@/assets/hero-3.jpg";
 
 const About = () => (
   <div className="pt-24 pb-20 bg-white min-h-screen">
