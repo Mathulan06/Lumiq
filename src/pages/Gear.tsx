@@ -51,7 +51,7 @@ const gearSections = [
 ];
 
 const Gear = () => (
-  <div className="pt-24 pb-20 bg-white min-h-screen">
+  <div className="pt-28 pb-20 bg-white min-h-screen">
     <div className="container mx-auto px-6">
       <SectionHeading title="My Gear" subtitle="Shot entirely on iPhone 15 Pro" />
 

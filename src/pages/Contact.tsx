@@ -35,7 +35,7 @@ const Contact = () => {
   const inputClass = "w-full font-body text-sm border-0 border-b border-neutral-200 bg-transparent py-3 text-foreground placeholder:text-neutral-400 focus:outline-none focus:border-foreground transition-colors duration-200";
 
   return (
-    <div className="pt-24 pb-20 bg-white min-h-screen">
+    <div className="pt-28 pb-20 bg-white min-h-screen">
       <div className="container mx-auto px-6">
         <SectionHeading title="Get in Touch" subtitle="Let's create something beautiful together" />
 

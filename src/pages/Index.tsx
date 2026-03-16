@@ -92,23 +92,29 @@ const Index = () => (
             {featured.map((item, i) => (
               <motion.div
                 key={item.category}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.12, duration: 0.7 }}
-                className="group relative aspect-[4/5] overflow-hidden cursor-pointer"
+                transition={{ delay: i * 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -6 }}
+                className="group relative aspect-[4/5] overflow-hidden cursor-pointer rounded-lg shadow-md hover:shadow-2xl transition-shadow duration-500"
               >
-                <img
+                <motion.img
                   src={item.src}
                   alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 flex flex-col justify-end p-6">
-                  <div className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                  <motion.div
+                    initial={false}
+                    className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400"
+                  >
                     <p className="font-body text-xs uppercase tracking-[0.2em] text-white/70">{item.category}</p>
                     <p className="font-display text-2xl font-light text-white mt-1">{item.title}</p>
-                  </div>
+                  </motion.div>
                 </div>
               </motion.div>
             ))}
