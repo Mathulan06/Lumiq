@@ -16,20 +16,22 @@ const Navbar = () => {
   const { pathname } = useLocation();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-200">
       <div className="container mx-auto flex items-center justify-between h-16 px-6">
-        <Link to="/" className="font-display text-xl font-bold tracking-wider text-gradient">
-          LENS
+        <Link to="/" className="font-display text-2xl font-light tracking-[0.2em] text-foreground">
+          Lumiq
         </Link>
 
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-10">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className={`font-display text-sm tracking-widest uppercase transition-colors duration-300 ${
-                pathname === l.to ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              className={`font-body text-xs tracking-[0.15em] uppercase transition-colors duration-200 ${
+                pathname === l.to
+                  ? "text-foreground"
+                  : "text-neutral-400 hover:text-foreground"
               }`}
             >
               {l.label}
@@ -39,7 +41,7 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <button onClick={() => setOpen(!open)} className="md:hidden text-foreground">
-          {open ? <X size={24} /> : <Menu size={24} />}
+          {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
@@ -50,7 +52,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border overflow-hidden"
+            className="md:hidden bg-white border-b border-neutral-200 overflow-hidden"
           >
             <div className="flex flex-col items-center gap-6 py-8">
               {links.map((l) => (
@@ -58,8 +60,8 @@ const Navbar = () => {
                   key={l.to}
                   to={l.to}
                   onClick={() => setOpen(false)}
-                  className={`font-display text-sm tracking-widest uppercase ${
-                    pathname === l.to ? "text-primary" : "text-muted-foreground"
+                  className={`font-body text-xs tracking-[0.15em] uppercase ${
+                    pathname === l.to ? "text-foreground" : "text-neutral-400"
                   }`}
                 >
                   {l.label}

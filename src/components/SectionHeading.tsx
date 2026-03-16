@@ -13,9 +13,9 @@ const SectionHeading = ({ title, subtitle }: Props) => (
     transition={{ duration: 0.6 }}
     className="text-center mb-16"
   >
-    <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight mb-4">{title}</h2>
-    {subtitle && <p className="text-muted-foreground text-lg max-w-xl mx-auto">{subtitle}</p>}
-    <div className="w-16 h-0.5 bg-primary mx-auto mt-6" />
+    <h2 className="font-display text-4xl md:text-6xl font-light tracking-wide mb-4">{title}</h2>
+    {subtitle && <p className="font-body text-sm text-neutral-400 tracking-[0.1em] uppercase max-w-xl mx-auto">{subtitle}</p>}
+    <div className="w-8 h-px bg-neutral-300 mx-auto mt-6" />
   </motion.div>
 );
 

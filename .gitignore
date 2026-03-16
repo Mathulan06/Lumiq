@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Local photo source folder (originals, not needed in repo)
+my photos/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
