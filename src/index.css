@@ -61,3 +61,21 @@
     position: relative;
   }
 }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+@keyframes slide-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.animate-slide-progress {
+  animation: slide-progress 5s linear forwards;
+  transform-origin: left;
+}

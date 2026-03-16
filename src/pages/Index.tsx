@@ -1,15 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 import HeroSlider from "@/components/HeroSlider";
-import SectionHeading from "@/components/SectionHeading";
 
-// Dynamically pick one photo per available category for featured section
+/* ── Dynamic image discovery ─────────────────────────────────── */
 const landscapeModules = import.meta.glob(
   "../assets/my-photos/landscape/*.{jpg,jpeg,png,webp}", { eager: true }
-) as Record<string, { default: string }>;
-
-const portraitModules = import.meta.glob(
-  "../assets/my-photos/portrait/*.{jpg,jpeg,png,webp}", { eager: true }
 ) as Record<string, { default: string }>;
 
 const natureModules = import.meta.glob(
@@ -20,139 +16,311 @@ const streetModules = import.meta.glob(
   "../assets/my-photos/street/*.{jpg,jpeg,png,webp}", { eager: true }
 ) as Record<string, { default: string }>;
 
-function firstOf(modules: Record<string, { default: string }>) {
-  const vals = Object.values(modules);
-  return vals.length > 0 ? vals[0].default : null;
+const allModules = import.meta.glob(
+  "../assets/my-photos/**/*.{jpg,jpeg,png,webp}", { eager: true }
+) as Record<string, { default: string }>;
+
+function nOf(modules: Record<string, { default: string }>, n: number) {
+  return Object.values(modules).slice(0, n).map((m) => m.default);
 }
 
-const candidates = [
-  { src: firstOf(landscapeModules), category: "Landscape", title: "Landscape" },
-  { src: firstOf(portraitModules),  category: "Portrait",  title: "Portrait"  },
-  { src: firstOf(natureModules),    category: "Nature",    title: "Nature"    },
-  { src: firstOf(streetModules),    category: "Street",    title: "Street"    },
-].filter((f) => f.src !== null) as { src: string; category: string; title: string }[];
+const landscapePhotos = nOf(landscapeModules, 6);
+const naturePhotos    = nOf(natureModules, 2);
+const streetPhotos    = nOf(streetModules, 2);
+const allPhotos       = nOf(allModules, 8);
 
-const featured = candidates.slice(0, 3);
+// Asymmetric featured: big = first landscape, pair = first nature + first street
+const featBig    = landscapePhotos[0] ?? null;
+const featPair   = [naturePhotos[0], streetPhotos[0]].filter(Boolean) as string[];
+
+// Stats
+const totalCount = Object.keys(allModules).length;
+
+/* ── Marquee text ─────────────────────────────────────────────── */
+const MARQUEE_ITEMS = ["Landscape", "Portrait", "Nature", "Street", "Light", "Story"];
+
+/* ── Fade-up variant ─────────────────────────────────────────── */
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 28 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.85, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
+const fadeUpInView = (delay = 0) => ({
+  initial: { opacity: 0, y: 28 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.85, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
 
 const Index = () => (
-  <div>
-    {/* Hero */}
+  <div className="overflow-x-hidden">
+
+    {/* ══ HERO ══════════════════════════════════════════════════ */}
     <div className="relative">
       <HeroSlider />
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 text-center px-6">
+
+      {/* Text overlay — bottom-left editorial layout */}
+      <div className="absolute inset-0 z-10 flex flex-col justify-end pb-20 px-8 md:px-16 pointer-events-none">
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="font-body text-xs tracking-[0.35em] uppercase text-white/70 mb-6"
+          {...fadeUp(0.2)}
+          className="font-body text-[10px] tracking-[0.4em] uppercase text-white/50 mb-5"
         >
-          Photography Portfolio
+          Photography Portfolio — Lumiq
         </motion.p>
+
         <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.9 }}
-          className="font-display text-5xl md:text-8xl font-light tracking-wide text-white mb-6 leading-none"
+          {...fadeUp(0.45)}
+          className="font-display text-5xl sm:text-7xl md:text-[6.5rem] font-light leading-[1.0] text-white mb-7 max-w-3xl"
         >
           Capturing Light.
           <br />
-          <span className="italic">Telling Stories.</span>
+          <em className="italic text-white/80">Telling Stories.</em>
         </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          className="font-body text-sm text-white/60 max-w-md mb-10 leading-relaxed tracking-wide"
-        >
-          A passionate photographer dedicated to finding beauty in every frame,
-          from sweeping landscapes to intimate portraits.
-        </motion.p>
+
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
-          className="flex gap-6"
+          {...fadeUp(0.75)}
+          className="flex flex-wrap items-center gap-5 pointer-events-auto"
         >
-          <Link to="/gallery" className="font-body text-xs tracking-[0.2em] uppercase text-white border border-white/50 px-8 py-3 hover:bg-white hover:text-black transition-all duration-300">
+          <Link
+            to="/gallery"
+            className="font-body text-[11px] tracking-[0.25em] uppercase bg-white text-black px-8 py-3 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-105 active:scale-95"
+          >
             View Gallery
           </Link>
-          <Link to="/contact" className="font-body text-xs tracking-[0.2em] uppercase text-white/70 hover:text-white transition-colors duration-300">
-            Contact Me →
+          <Link
+            to="/contact"
+            className="font-body text-[11px] tracking-[0.25em] uppercase text-white/60 hover:text-white transition-colors duration-300 flex items-center gap-2"
+          >
+            Contact Me <span className="text-base leading-none">→</span>
           </Link>
         </motion.div>
       </div>
+
+      {/* Scroll cue — center bottom */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.6, duration: 0.8 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1"
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ArrowDown size={14} className="text-white/40" />
+        </motion.div>
+      </motion.div>
     </div>
 
-    {/* Featured Works */}
-    {featured.length > 0 && (
+    {/* ══ MARQUEE STRIP ═════════════════════════════════════════ */}
+    <div className="bg-neutral-900 py-4 overflow-hidden border-y border-neutral-800">
+      <div className="flex animate-marquee whitespace-nowrap">
+        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-6 px-6">
+            <span className="font-display text-sm font-light tracking-[0.3em] uppercase text-white/40">
+              {item}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-white/20 flex-shrink-0" />
+          </span>
+        ))}
+      </div>
+    </div>
+
+    {/* ══ SELECTED WORKS ════════════════════════════════════════ */}
+    {(featBig || featPair.length > 0) && (
       <section className="py-28 bg-white">
-        <div className="container mx-auto px-6">
-          <SectionHeading title="Featured Works" subtitle="A curated selection from the collection" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {featured.map((item, i) => (
-              <motion.div
-                key={item.category}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -6 }}
-                className="group relative aspect-[4/5] overflow-hidden cursor-pointer rounded-lg shadow-md hover:shadow-2xl transition-shadow duration-500"
+        <div className="container mx-auto px-6 md:px-12">
+
+          {/* Left-aligned heading */}
+          <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
+            <motion.div {...fadeUpInView()}>
+              <p className="font-body text-[10px] tracking-[0.35em] uppercase text-neutral-400 mb-3">
+                Selected Works
+              </p>
+              <h2 className="font-display text-5xl md:text-6xl font-light leading-tight">
+                Recent<br /><em>Collection</em>
+              </h2>
+            </motion.div>
+            <motion.div {...fadeUpInView(0.15)}>
+              <Link
+                to="/gallery"
+                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
               >
-                <motion.img
-                  src={item.src}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                  whileHover={{ scale: 1.08 }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
-                  <motion.div
-                    initial={false}
-                    className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400"
-                  >
-                    <p className="font-body text-xs uppercase tracking-[0.2em] text-white/70">{item.category}</p>
-                    <p className="font-display text-2xl font-light text-white mt-1">{item.title}</p>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
+                View All {totalCount > 0 ? `${totalCount}+` : ""} Works
+              </Link>
+            </motion.div>
           </div>
-          <div className="text-center mt-14">
-            <Link to="/gallery" className="font-body text-xs tracking-[0.2em] uppercase text-foreground border-b border-foreground pb-1 hover:text-neutral-500 hover:border-neutral-500 transition-colors duration-200">
-              Explore Full Gallery
-            </Link>
+
+          {/* Asymmetric grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Big card — spans 2 columns */}
+            {featBig && (
+              <motion.div
+                {...fadeUpInView(0.1)}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
+                className="md:col-span-2 group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 aspect-[4/3] md:aspect-auto md:h-[520px]"
+              >
+                <Link to="/gallery">
+                  <motion.img
+                    src={featBig}
+                    alt="Landscape"
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
+                    <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                      <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">Landscape</p>
+                      <p className="font-display text-3xl font-light text-white">The Open Land</p>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            )}
+
+            {/* Stacked pair — 1 column */}
+            {featPair.length > 0 && (
+              <div className="flex flex-col gap-3">
+                {featPair.map((src, i) => (
+                  <motion.div
+                    key={src}
+                    {...fadeUpInView(0.2 + i * 0.12)}
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.3 }}
+                    className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 flex-1 min-h-[248px]"
+                  >
+                    <Link to="/gallery">
+                      <motion.img
+                        src={src}
+                        alt={i === 0 ? "Nature" : "Street"}
+                        className="w-full h-full object-cover"
+                        whileHover={{ scale: 1.07 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                        <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                          <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">
+                            {i === 0 ? "Nature" : "Street"}
+                          </p>
+                          <p className="font-display text-xl font-light text-white">
+                            {i === 0 ? "Into the Wild" : "City Frames"}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
     )}
 
-    {/* Quote strip */}
-    <section className="py-24 bg-neutral-50 border-t border-neutral-100">
-      <div className="container mx-auto px-6 max-w-3xl text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="font-display text-2xl md:text-4xl font-light leading-relaxed text-foreground"
-        >
-          "Light is everything. It shapes mood, depth, and emotion — and I spend my life chasing it."
-        </motion.p>
+    {/* ══ STATS ROW ═════════════════════════════════════════════ */}
+    <section className="py-16 bg-neutral-50 border-y border-neutral-100">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-200">
+          {[
+            { number: "21", label: "Landscapes" },
+            { number: "8",  label: "Nature Shots" },
+            { number: "6",  label: "Street Photos" },
+            { number: "∞",  label: "Stories to Tell" },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              {...fadeUpInView(i * 0.08)}
+              className="text-center py-4 px-4"
+            >
+              <p className="font-display text-5xl md:text-6xl font-light text-neutral-900 mb-2">
+                {stat.number}
+              </p>
+              <p className="font-body text-[10px] tracking-[0.25em] uppercase text-neutral-400">
+                {stat.label}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ══ PHOTO STRIP ═══════════════════════════════════════════ */}
+    {allPhotos.length >= 4 && (
+      <section className="py-0 bg-white overflow-hidden">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="mt-8"
+          {...fadeUpInView()}
+          className="flex gap-1 mt-0"
         >
-          <Link to="/about" className="font-body text-xs tracking-[0.2em] uppercase text-neutral-500 hover:text-foreground transition-colors duration-200">
-            Learn More About Me →
+          {allPhotos.slice(0, 6).map((src, i) => (
+            <motion.div
+              key={src}
+              initial={{ opacity: 0, scale: 1.04 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: i * 0.07 }}
+              whileHover={{ scale: 1.03, zIndex: 10 }}
+              className="relative flex-1 min-w-0 aspect-[3/4] overflow-hidden cursor-pointer"
+            >
+              <Link to="/gallery">
+                <img
+                  src={src}
+                  alt=""
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  loading="lazy"
+                />
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+    )}
+
+    {/* ══ QUOTE ═════════════════════════════════════════════════ */}
+    <section className="relative py-32 bg-neutral-900 overflow-hidden">
+      {/* Subtle background texture using a photo at low opacity */}
+      {landscapePhotos[2] && (
+        <img
+          src={landscapePhotos[2]}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-10 scale-105"
+          aria-hidden
+        />
+      )}
+      <div className="absolute inset-0 bg-neutral-900/60" />
+
+      <div className="relative container mx-auto px-6 max-w-4xl text-center">
+        <motion.p
+          {...fadeUpInView()}
+          className="font-display text-3xl md:text-5xl font-light leading-relaxed text-white/90 italic"
+        >
+          "Light is everything. It shapes mood,<br className="hidden md:block" />
+          depth, and emotion — and I spend<br className="hidden md:block" />
+          my life chasing it."
+        </motion.p>
+
+        <motion.div
+          {...fadeUpInView(0.25)}
+          className="mt-6 flex flex-col items-center gap-1"
+        >
+          <div className="w-8 h-px bg-white/20 mb-4" />
+          <p className="font-body text-xs tracking-[0.3em] uppercase text-white/30">
+            — Lumiq
+          </p>
+        </motion.div>
+
+        <motion.div {...fadeUpInView(0.4)} className="mt-12">
+          <Link
+            to="/about"
+            className="font-body text-[11px] tracking-[0.25em] uppercase text-white/50 border border-white/20 rounded-full px-8 py-3 hover:bg-white hover:text-black transition-all duration-400"
+          >
+            About Me
           </Link>
         </motion.div>
       </div>
     </section>
+
   </div>
 );
 
