@@ -152,17 +152,17 @@ const Index = () => (
             </motion.div>
           </div>
 
-          {/* Asymmetric grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Big card — spans 2 columns */}
+          {/* Row 1 — asymmetric: big card + 2 stacked */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:h-[520px]">
+            {/* Big card — spans 2 columns, fills height */}
             {featBig && (
               <motion.div
                 {...fadeUpInView(0.1)}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -4 }}
                 transition={{ duration: 0.3 }}
-                className="md:col-span-2 group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 aspect-[4/3] md:aspect-auto md:h-[520px]"
+                className="md:col-span-2 h-full group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 aspect-[4/3] md:aspect-auto"
               >
-                <Link to="/gallery">
+                <Link to="/gallery" className="block w-full h-full">
                   <motion.img
                     src={featBig}
                     alt="Landscape"
@@ -180,18 +180,18 @@ const Index = () => (
               </motion.div>
             )}
 
-            {/* Stacked pair — 1 column */}
+            {/* Stacked pair — fills full column height */}
             {featPair.length > 0 && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 h-full">
                 {featPair.map((src, i) => (
                   <motion.div
                     key={src}
                     {...fadeUpInView(0.2 + i * 0.12)}
-                    whileHover={{ y: -5 }}
+                    whileHover={{ y: -4 }}
                     transition={{ duration: 0.3 }}
-                    className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 flex-1 min-h-[248px]"
+                    className="flex-1 group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500 min-h-[200px]"
                   >
-                    <Link to="/gallery">
+                    <Link to="/gallery" className="block w-full h-full">
                       <motion.img
                         src={src}
                         alt={i === 0 ? "Nature" : "Street"}
@@ -215,6 +215,37 @@ const Index = () => (
               </div>
             )}
           </div>
+
+          {/* Row 2 — three equal landscape photos */}
+          {landscapePhotos.length >= 3 && (
+            <div className="grid grid-cols-3 gap-3 mt-3">
+              {landscapePhotos.slice(1, 4).map((src, i) => (
+                <motion.div
+                  key={src}
+                  {...fadeUpInView(0.1 + i * 0.1)}
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.3 }}
+                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-500"
+                >
+                  <Link to="/gallery" className="block w-full h-full">
+                    <motion.img
+                      src={src}
+                      alt="Landscape"
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.07 }}
+                      transition={{ duration: 0.7, ease: "easeOut" }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-5">
+                      <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                        <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">Landscape</p>
+                        <p className="font-display text-lg font-light text-white">Frame {i + 2}</p>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     )}
