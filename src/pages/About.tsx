@@ -60,33 +60,6 @@ const About = () => (
             My philosophy is simple: <span className="text-foreground font-medium">light is everything.</span> It shapes mood, depth, and emotion. Whether I'm capturing the raw energy of a bustling street market or the quiet solitude of a mountain sunrise, I strive to find that perfect interplay between shadow and illumination.
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="border-l-2 border-neutral-200 pl-6 mt-8"
-          >
-            <h4 className="font-body text-xs tracking-[0.15em] uppercase text-neutral-400 mb-4">Highlights</h4>
-            <ul className="space-y-3 font-body text-sm text-neutral-500">
-              {[
-                "Featured in National Geographic Traveler",
-                'Solo exhibition — "Chiaroscuro" at Metro Art Gallery',
-                "50K+ followers across photography platforms",
-                "Workshop instructor — landscape & street photography",
-              ].map((item, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.65 + i * 0.08 }}
-                >
-                  {item}
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
         </motion.div>
       </div>
     </div>
