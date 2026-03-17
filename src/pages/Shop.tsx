@@ -35,10 +35,10 @@ const ALL_ITEMS = [
 
 /* ── Print size options ───────────────────────────────────────── */
 const SIZES = [
-  { label: "Digital Download", detail: "Full resolution JPEG · Instant delivery", price: 15 },
-  { label: "Small Print",      detail: '8" × 10" · Giclée archival paper',         price: 25 },
-  { label: "Medium Print",     detail: '12" × 16" · Giclée archival paper',        price: 45 },
-  { label: "Large Print",      detail: '16" × 20" · Giclée archival paper',        price: 75 },
+  { label: "Digital Download", detail: "Full resolution JPEG · Instant delivery", price: 1 },
+  { label: "Small Print",      detail: '8" × 10" · Giclée archival paper',         price: 3 },
+  { label: "Medium Print",     detail: '12" × 16" · Giclée archival paper',        price: 5 },
+  { label: "Large Print",      detail: '16" × 20" · Giclée archival paper',        price: 7 },
 ];
 
 const TABS = ["All", "Landscape", "Nature", "Street"];
@@ -172,7 +172,7 @@ const Shop = () => {
                     {item.category}
                   </p>
                 </div>
-                <p className="font-body text-sm text-neutral-400 mt-1">From $15</p>
+                <p className="font-body text-sm text-neutral-400 mt-1">From $1</p>
               </div>
             </motion.div>
           ))}
