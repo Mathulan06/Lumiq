@@ -1,4 +1,4 @@
-import { Instagram, Mail } from "lucide-react";
+import { Instagram, Mail, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => (
@@ -8,13 +8,32 @@ const Footer = () => (
         Lumiq
       </Link>
       <p className="font-body text-xs text-neutral-400 tracking-wide">
-        © {new Date().getFullYear()} Lumiq Photography. All rights reserved.
+        © {new Date().getFullYear()} Mathulan Shanmugam. All rights reserved.
       </p>
       <div className="flex items-center gap-5">
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-foreground transition-colors">
+        <a
+          href="https://www.instagram.com/mathulan.s"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-neutral-400 hover:text-foreground transition-colors"
+          aria-label="Instagram"
+        >
           <Instagram size={17} />
         </a>
-        <a href="mailto:hello@lens.photo" className="text-neutral-400 hover:text-foreground transition-colors">
+        <a
+          href="https://web.facebook.com/mtahh15"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-neutral-400 hover:text-foreground transition-colors"
+          aria-label="Facebook"
+        >
+          <Facebook size={17} />
+        </a>
+        <a
+          href="mailto:mathulanshanmugam@gmail.com"
+          className="text-neutral-400 hover:text-foreground transition-colors"
+          aria-label="Email"
+        >
           <Mail size={17} />
         </a>
       </div>
