@@ -27,11 +27,13 @@ function nOf(modules: Record<string, { default: string }>, n: number) {
 const allPhotos       = nOf(allModules, 8);
 const landscapePhotos = nOf(landscapeModules, 4);
 
-// One curated pick per category for the featured row
+// 5 curated picks: row-1 (3 equal) + row-2 (2 wide)
 const featuredPhotos = [
   { src: nOf(landscapeModules, 1)[0], category: "Landscape" },
   { src: nOf(natureModules,   1)[0],  category: "Nature"    },
   { src: nOf(streetModules,   1)[0],  category: "Street"    },
+  { src: nOf(landscapeModules, 2)[1], category: "Landscape" },
+  { src: nOf(natureModules,   2)[1],  category: "Nature"    },
 ].filter((p) => p.src) as { src: string; category: string }[];
 
 // Stats
@@ -153,16 +155,18 @@ const Index = () => (
             </motion.div>
           </div>
 
-          {/* 3-column grid — items-start so each column is only as tall as its photo */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+          {/* Row 1 (3 equal) + Row 2 (2 wide) — grid-cols-6 ensures full coverage */}
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4 items-start">
             {featuredPhotos.map((photo, i) => (
               <motion.div
-                key={photo.src}
+                key={photo.src + i}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className={`group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 ${
+                  i < 3 ? "sm:col-span-2" : "sm:col-span-3"
+                }`}
               >
                 <Link to="/gallery">
                   <img
