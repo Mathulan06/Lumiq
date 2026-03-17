@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Images, Smartphone, User, Mail } from "lucide-react";
+import { Home, Images, ShoppingBag, Smartphone, User, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
-  { to: "/",        label: "Home",    icon: Home       },
-  { to: "/gallery", label: "Gallery", icon: Images     },
-  { to: "/gear",    label: "Gear",    icon: Smartphone },
-  { to: "/about",   label: "About",   icon: User       },
-  { to: "/contact", label: "Contact", icon: Mail       },
+  { to: "/",        label: "Home",    icon: Home        },
+  { to: "/gallery", label: "Gallery", icon: Images      },
+  { to: "/shop",    label: "Shop",    icon: ShoppingBag },
+  { to: "/gear",    label: "Gear",    icon: Smartphone  },
+  { to: "/about",   label: "About",   icon: User        },
+  { to: "/contact", label: "Contact", icon: Mail        },
 ];
 
 const Navbar = () => {
