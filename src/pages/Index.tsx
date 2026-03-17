@@ -24,14 +24,19 @@ function nOf(modules: Record<string, { default: string }>, n: number) {
   return Object.values(modules).slice(0, n).map((m) => m.default);
 }
 
-const landscapePhotos = nOf(landscapeModules, 6);
-const naturePhotos    = nOf(natureModules, 2);
-const streetPhotos    = nOf(streetModules, 2);
+const landscapePhotos = nOf(landscapeModules, 4);
+const naturePhotos    = nOf(natureModules, 3);
+const streetPhotos    = nOf(streetModules, 3);
 const allPhotos       = nOf(allModules, 8);
 
-// Asymmetric featured: big = first landscape, pair = first nature + first street
-const featBig    = landscapePhotos[0] ?? null;
-const featPair   = [naturePhotos[0], streetPhotos[0]].filter(Boolean) as string[];
+// Interleave categories so masonry columns get visual variety
+const featuredPhotos: { src: string; category: string }[] = [];
+const maxLen = Math.max(landscapePhotos.length, naturePhotos.length, streetPhotos.length);
+for (let i = 0; i < maxLen; i++) {
+  if (landscapePhotos[i]) featuredPhotos.push({ src: landscapePhotos[i], category: "Landscape" });
+  if (naturePhotos[i])    featuredPhotos.push({ src: naturePhotos[i],    category: "Nature"    });
+  if (streetPhotos[i])    featuredPhotos.push({ src: streetPhotos[i],    category: "Street"    });
+}
 
 // Stats
 const totalCount = Object.keys(allModules).length;
@@ -128,11 +133,11 @@ const Index = () => (
     </div>
 
     {/* ══ SELECTED WORKS ════════════════════════════════════════ */}
-    {(featBig || featPair.length > 0) && (
+    {featuredPhotos.length > 0 && (
       <section className="py-28 bg-white">
         <div className="container mx-auto px-6 md:px-12">
 
-          {/* Left-aligned heading */}
+          {/* Heading row */}
           <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
             <motion.div {...fadeUpInView()}>
               <p className="font-body text-[10px] tracking-[0.35em] uppercase text-neutral-400 mb-3">
@@ -152,96 +157,36 @@ const Index = () => (
             </motion.div>
           </div>
 
-          {/* Row 1 — asymmetric: big card left, two portrait cards right */}
-          <div className="flex flex-col md:flex-row gap-3">
-
-            {/* Big card — 2/3 width, landscape 4/3 */}
-            {featBig && (
+          {/* Masonry grid — original aspect ratios */}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-3">
+            {featuredPhotos.map((photo, i) => (
               <motion.div
-                initial={{ opacity: 0, y: 24 }}
+                key={photo.src}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 md:flex-[2]"
+                transition={{ duration: 0.7, delay: Math.min(i * 0.07, 0.4), ease: [0.22, 1, 0.36, 1] }}
+                className="break-inside-avoid mb-3 group relative overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl transition-all duration-400 hover:-translate-y-1"
               >
-                <Link to="/gallery" className="absolute inset-0">
+                <Link to="/gallery">
                   <img
-                    src={featBig}
-                    alt="Landscape"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    src={photo.src}
+                    alt={photo.category}
+                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.03]"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
-                    <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                      <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">Landscape</p>
-                      <p className="font-display text-3xl font-light text-white">The Open Land</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end p-5">
+                    <div className="translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                      <p className="font-body text-[10px] uppercase tracking-[0.25em] text-white/60 mb-1">
+                        {photo.category}
+                      </p>
                     </div>
                   </div>
                 </Link>
               </motion.div>
-            )}
-
-            {/* Right column — 1/3 width, each card uses same 4/3 ratio */}
-            <div className="flex flex-col gap-3 md:flex-1">
-              {featPair.map((src, i) => (
-                <motion.div
-                  key={src}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.12 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-                >
-                  <Link to="/gallery" className="absolute inset-0">
-                    <img
-                      src={src}
-                      alt={i === 0 ? "Nature" : "Street"}
-                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-5">
-                      <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                        <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">
-                          {i === 0 ? "Nature" : "Street"}
-                        </p>
-                        <p className="font-display text-xl font-light text-white">
-                          {i === 0 ? "Into the Wild" : "City Frames"}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+            ))}
           </div>
 
-          {/* Row 2 — three equal landscape cards */}
-          {landscapePhotos.length >= 3 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
-              {landscapePhotos.slice(1, 4).map((src, i) => (
-                <motion.div
-                  key={src}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
-                >
-                  <Link to="/gallery" className="absolute inset-0">
-                    <img
-                      src={src}
-                      alt="Landscape"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-5">
-                      <div className="translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                        <p className="font-body text-xs uppercase tracking-[0.25em] text-white/60 mb-1">Landscape</p>
-                        <p className="font-display text-lg font-light text-white">Frame {i + 2}</p>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
     )}
