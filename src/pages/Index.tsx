@@ -155,8 +155,8 @@ const Index = () => (
             </motion.div>
           </div>
 
-          {/* Row 1 (3 equal) + Row 2 (2 wide) — grid-cols-6 ensures full coverage */}
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4 items-start">
+          {/* Row 1 (3 equal portrait) + Row 2 (2 wide landscape) */}
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
             {featuredPhotos.map((photo, i) => (
               <motion.div
                 key={photo.src + i}
@@ -165,14 +165,14 @@ const Index = () => (
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={`group relative overflow-hidden rounded-2xl cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 ${
-                  i < 3 ? "sm:col-span-2" : "sm:col-span-3"
+                  i < 3 ? "sm:col-span-2 aspect-[3/4]" : "sm:col-span-3 aspect-[4/3]"
                 }`}
               >
-                <Link to="/gallery">
+                <Link to="/gallery" className="absolute inset-0">
                   <img
                     src={photo.src}
                     alt={photo.category}
-                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.04]"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end p-6">
