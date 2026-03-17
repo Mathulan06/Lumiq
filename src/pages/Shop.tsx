@@ -193,15 +193,17 @@ const Shop = () => {
               onClick={() => setSelected(null)}
             />
 
+            {/* Centering wrapper */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4 pointer-events-none">
             {/* Modal panel */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-x-4 bottom-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl z-50 bg-white rounded-3xl overflow-hidden shadow-2xl"
+              className="w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl pointer-events-auto"
             >
-              <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible">
+              <div className="flex flex-col md:flex-row max-h-[85vh] overflow-y-auto">
 
                 {/* Photo preview */}
                 <div className="md:w-[42%] flex-shrink-0">
@@ -274,6 +276,7 @@ const Shop = () => {
                 </div>
               </div>
             </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
