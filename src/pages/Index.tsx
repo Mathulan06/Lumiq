@@ -24,7 +24,8 @@ function nOf(modules: Record<string, { default: string }>, n: number) {
   return Object.values(modules).slice(0, n).map((m) => m.default);
 }
 
-const allPhotos = nOf(allModules, 8);
+const allPhotos       = nOf(allModules, 8);
+const landscapePhotos = nOf(landscapeModules, 4);
 
 // One curated pick per category for the featured row
 const featuredPhotos = [
