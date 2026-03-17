@@ -21,15 +21,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/gear" element={<Gear />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
+        {/* pb-20 on mobile clears the fixed bottom tab bar */}
+        <div className="pb-20 md:pb-0">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gear" element={<Gear />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Footer />
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
