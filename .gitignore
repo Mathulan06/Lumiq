@@ -15,6 +15,10 @@ dist-ssr
 # Local photo source folder (originals, not needed in repo)
 my photos/
 
+# Next.js build output
+.next/
+out/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
