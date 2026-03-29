@@ -13,14 +13,15 @@ export async function generateStaticParams() {
 export default async function CategoryPage({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }) {
+  const { category } = await params;
   const [photos, allCategories] = await Promise.all([
-    getPhotos(params.category).catch(() => []),
+    getPhotos(category).catch(() => []),
     getCategories().catch(() => []),
   ]);
 
-  if (!allCategories.includes(params.category) && photos.length === 0) {
+  if (!allCategories.includes(category) && photos.length === 0) {
     notFound();
   }
 
@@ -32,7 +33,7 @@ export default async function CategoryPage({
             Gallery
           </p>
           <h1 className="font-display text-5xl md:text-7xl font-light">
-            <em>{capitalize(params.category)}</em>
+            <em>{capitalize(category)}</em>
           </h1>
           <p className="font-body text-sm text-neutral-400 mt-3">
             {photos.length} photograph{photos.length !== 1 ? "s" : ""}

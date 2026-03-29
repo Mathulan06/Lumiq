@@ -6,7 +6,7 @@ import ImageManager from "@/components/admin/ImageManager";
 export default async function AdminDashboardPage() {
   // Double-check auth server-side (middleware already handles this,
   // but an extra check here avoids any edge cases)
-  const token = cookies().get("admin_token")?.value;
+  const token = (await cookies()).get("admin_token")?.value;
   if (!token || !(await verifyToken(token))) redirect("/admin");
 
   return (
