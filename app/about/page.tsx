@@ -37,32 +37,30 @@ export default function AboutPage() {
 
       {/* ── Photo + Text ──────────────────────────────────────── */}
       <div className="container mx-auto px-6 md:px-10">
-        <div className="grid md:grid-cols-5 gap-8 md:gap-16 items-start">
+        <div className="grid md:grid-cols-5 gap-10 md:gap-16 items-start">
 
-          {/* Photo — takes 3/5 width */}
+          {/* Photo — takes 2/5 width, fixed portrait ratio */}
           <motion.div
             {...fadeUp()}
-            className="md:col-span-3 overflow-hidden rounded-2xl shadow-2xl"
+            className="md:col-span-2 overflow-hidden rounded-2xl shadow-xl"
           >
             <motion.div
               whileHover={{ scale: 1.03 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="relative w-full"
-              style={{ maxHeight: "80vh" }}
+              className="relative w-full aspect-[3/4]"
             >
               <Image
                 src="/hero-3.jpg"
                 alt="Photographer"
-                width={900}
-                height={1200}
-                className="w-full object-cover"
-                style={{ maxHeight: "80vh", objectFit: "cover" }}
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 768px) 100vw, 40vw"
               />
             </motion.div>
           </motion.div>
 
-          {/* Text — takes 2/5 width */}
-          <div className="md:col-span-2 space-y-8 md:pt-10 md:sticky md:top-28">
+          {/* Text — takes 3/5 width */}
+          <div className="md:col-span-3 space-y-8 md:pt-4 md:sticky md:top-28">
 
             <motion.h2
               {...fadeUp(0.15)}
