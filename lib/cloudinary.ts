@@ -27,16 +27,20 @@ export function buildUrl(
 /** Map a raw Cloudinary resource to our Photo type */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function toPhoto(r: any): Photo {
+  const tags: string[] = r.tags ?? [];
   return {
     id: r.asset_id,
     publicId: r.public_id,
     url: buildUrl(r.public_id),
     thumbnailUrl: buildUrl(r.public_id, { width: 900 }),
-    category: r.tags?.[0] ?? "uncategorized",
+    // category = first non-special tag
+    category: tags.find((t) => !t.startsWith("_")) ?? "uncategorized",
     title: r.context?.custom?.title ?? r.context?.title ?? "",
     description: r.context?.custom?.description ?? r.context?.description ?? "",
     price: parseFloat(r.context?.custom?.price ?? r.context?.price ?? "0"),
     createdAt: r.created_at,
+    isHero: tags.includes("_hero"),
+    isFeatured: tags.includes("_featured"),
   };
 }
 
@@ -57,7 +61,32 @@ export async function getPhotos(category?: string): Promise<Photo[]> {
   return (result.resources ?? []).map(toPhoto);
 }
 
-/** Return all unique category tags */
+/** Return the hero photo (tag: _hero), falls back to most recent */
+export async function getHeroPhoto(): Promise<Photo | null> {
+  const result = await cloudinary.search
+    .expression("tags=_hero AND folder=lumiq")
+    .with_field("context")
+    .with_field("tags")
+    .max_results(1)
+    .execute();
+
+  return result.resources?.[0] ? toPhoto(result.resources[0]) : null;
+}
+
+/** Return featured photos (tag: _featured) */
+export async function getFeaturedPhotos(): Promise<Photo[]> {
+  const result = await cloudinary.search
+    .expression("tags=_featured AND folder=lumiq")
+    .with_field("context")
+    .with_field("tags")
+    .sort_by("created_at", "desc")
+    .max_results(20)
+    .execute();
+
+  return (result.resources ?? []).map(toPhoto);
+}
+
+/** Return all unique category tags (excludes internal _tags) */
 export async function getCategories(): Promise<string[]> {
   const result = await cloudinary.search
     .expression("folder=lumiq")
@@ -68,7 +97,9 @@ export async function getCategories(): Promise<string[]> {
   const set = new Set<string>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (result.resources ?? []).forEach((r: any) =>
-    (r.tags ?? []).forEach((t: string) => set.add(t))
+    (r.tags ?? []).forEach((t: string) => {
+      if (!t.startsWith("_")) set.add(t);
+    })
   );
   return Array.from(set).sort();
 }

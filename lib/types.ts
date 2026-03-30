@@ -8,4 +8,6 @@ export interface Photo {
   description: string;
   price: number;
   createdAt: string;
+  isHero?: boolean;
+  isFeatured?: boolean;
 }

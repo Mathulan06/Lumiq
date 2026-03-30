@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, RefreshCw, Images, Pencil, X, Check } from "lucide-react";
+import { Trash2, RefreshCw, Images, Pencil, X, Check, Star, Home } from "lucide-react";
 import { toast } from "sonner";
 import UploadForm from "./UploadForm";
 import type { Photo } from "@/lib/types";
@@ -16,6 +16,8 @@ interface EditState {
   title: string;
   description: string;
   price: string;
+  isHero: boolean;
+  isFeatured: boolean;
 }
 
 export default function ImageManager() {
@@ -75,6 +77,8 @@ export default function ImageManager() {
       title: photo.title,
       description: photo.description,
       price: photo.price > 0 ? String(photo.price) : "",
+      isHero: !!photo.isHero,
+      isFeatured: !!photo.isFeatured,
     });
   }
 
@@ -97,6 +101,8 @@ export default function ImageManager() {
           title: editing.title,
           description: editing.description,
           price: editing.price || "0",
+          isHero: editing.isHero,
+          isFeatured: editing.isFeatured,
         }),
       });
       if (!res.ok) throw new Error();
@@ -111,8 +117,10 @@ export default function ImageManager() {
                 title: editing.title,
                 description: editing.description,
                 price: parseFloat(editing.price || "0"),
+                isHero: editing.isHero,
+                isFeatured: editing.isFeatured,
               }
-            : p
+            : editing.isHero ? { ...p, isHero: false } : p
         )
       );
       setEditing(null);
@@ -261,6 +269,48 @@ export default function ImageManager() {
                     />
                   </div>
 
+                  {/* Hero + Featured toggles */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, isHero: !editing.isHero })}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-left transition-all duration-200 ${
+                        editing.isHero
+                          ? "bg-neutral-900 border-neutral-900 text-white"
+                          : "border-neutral-200 text-neutral-500 hover:border-neutral-400"
+                      }`}
+                    >
+                      <Home size={14} className="flex-shrink-0" />
+                      <div>
+                        <p className="font-body text-[10px] tracking-[0.15em] uppercase font-medium">
+                          Hero Photo
+                        </p>
+                        <p className="font-body text-[9px] text-current opacity-50 mt-0.5">
+                          Home page background
+                        </p>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, isFeatured: !editing.isFeatured })}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-left transition-all duration-200 ${
+                        editing.isFeatured
+                          ? "bg-neutral-900 border-neutral-900 text-white"
+                          : "border-neutral-200 text-neutral-500 hover:border-neutral-400"
+                      }`}
+                    >
+                      <Star size={14} className="flex-shrink-0" />
+                      <div>
+                        <p className="font-body text-[10px] tracking-[0.15em] uppercase font-medium">
+                          Featured
+                        </p>
+                        <p className="font-body text-[9px] text-current opacity-50 mt-0.5">
+                          Featured collection
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+
                   {/* Actions */}
                   <div className="flex gap-3 pt-1">
                     <button
@@ -400,6 +450,22 @@ export default function ImageManager() {
                     )}
                   </div>
                 </div>
+
+                {/* Hero / Featured badges */}
+                {(photo.isHero || photo.isFeatured) && (
+                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    {photo.isHero && (
+                      <span className="flex items-center gap-1 bg-neutral-900/80 text-white text-[9px] font-body tracking-widest uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        <Home size={8} /> Hero
+                      </span>
+                    )}
+                    {photo.isFeatured && (
+                      <span className="flex items-center gap-1 bg-neutral-900/80 text-white text-[9px] font-body tracking-widest uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        <Star size={8} /> Featured
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {deleting === photo.publicId && (
                   <div className="absolute inset-0 bg-black/70 flex items-center justify-center">

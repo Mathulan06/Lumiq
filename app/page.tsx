@@ -1,18 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPhotos, getCategories } from "@/lib/cloudinary";
+import { getPhotos, getCategories, getHeroPhoto, getFeaturedPhotos } from "@/lib/cloudinary";
 
 const MARQUEE_ITEMS = ["Landscape", "Portrait", "Nature", "Street", "Light", "Story"];
 
-export const revalidate = 60; // ISR — refresh every 60 s
+export const revalidate = 60;
 
 export default async function HomePage() {
-  const [photos, categories] = await Promise.all([
+  const [photos, categories, heroPhoto, featuredPhotos] = await Promise.all([
     getPhotos().catch(() => []),
     getCategories().catch(() => []),
+    getHeroPhoto().catch(() => null),
+    getFeaturedPhotos().catch(() => []),
   ]);
 
-  const featured = photos.slice(0, 5);
+  const hero = heroPhoto ?? photos[0] ?? null;
+  const recent = photos.slice(0, 5);
   const strip = photos.slice(0, 6);
 
   return (
@@ -20,9 +23,9 @@ export default async function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative h-screen min-h-[600px] bg-neutral-900 flex items-end pb-20 px-8 md:px-16">
-        {photos[0] && (
+        {hero && (
           <Image
-            src={photos[0].url}
+            src={hero.url}
             alt="Hero"
             fill
             priority
@@ -72,8 +75,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ── FEATURED WORKS ───────────────────────────────────── */}
-      {featured.length > 0 && (
+      {/* ── RECENT COLLECTION ────────────────────────────────── */}
+      {recent.length > 0 && (
         <section className="py-28 bg-white">
           <div className="container mx-auto px-6 md:px-12">
             <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
@@ -94,7 +97,7 @@ export default async function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-              {featured.map((photo, i) => (
+              {recent.map((photo, i) => (
                 <Link
                   key={photo.id}
                   href={`/gallery/${photo.category}`}
@@ -118,6 +121,57 @@ export default async function HomePage() {
                         {photo.title || photo.category}
                       </p>
                     </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── FEATURED COLLECTION ──────────────────────────────── */}
+      {featuredPhotos.length > 0 && (
+        <section className="py-28 bg-neutral-50">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
+              <div>
+                <p className="font-body text-[10px] tracking-[0.35em] uppercase text-neutral-400 mb-3">
+                  Curated Picks
+                </p>
+                <h2 className="font-display text-5xl md:text-6xl font-light leading-tight">
+                  Featured<br /><em>Collection</em>
+                </h2>
+              </div>
+              <Link
+                href="/gallery"
+                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
+              >
+                Browse Gallery
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {featuredPhotos.map((photo) => (
+                <Link
+                  key={photo.id}
+                  href={`/gallery/${photo.category}`}
+                  className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 aspect-[3/4]"
+                >
+                  <Image
+                    src={photo.thumbnailUrl}
+                    alt={photo.title || photo.category}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <p className="font-body text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">
+                      {photo.category}
+                    </p>
+                    <p className="font-display text-2xl font-light text-white">
+                      {photo.title || photo.category}
+                    </p>
                   </div>
                 </Link>
               ))}
