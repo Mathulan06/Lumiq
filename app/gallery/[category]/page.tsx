@@ -1,14 +1,9 @@
 import { notFound } from "next/navigation";
-import { getPhotos, getCategories } from "@/lib/cloudinary";
+import { getPhotos } from "@/lib/cloudinary";
 import { capitalize } from "@/lib/utils";
 import CategoryGallery from "./CategoryGallery";
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  const categories = await getCategories().catch(() => []);
-  return categories.map((category) => ({ category }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function CategoryPage({
   params,
@@ -16,12 +11,9 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const [photos, allCategories] = await Promise.all([
-    getPhotos(category).catch(() => []),
-    getCategories().catch(() => []),
-  ]);
+  const photos = await getPhotos(category).catch(() => []);
 
-  if (!allCategories.includes(category) && photos.length === 0) {
+  if (photos.length === 0) {
     notFound();
   }
 
