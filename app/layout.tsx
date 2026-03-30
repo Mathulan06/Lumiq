@@ -3,7 +3,6 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -28,14 +27,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
       <body>
-        <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <Toaster position="bottom-right" richColors />
-        </ThemeProvider>
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

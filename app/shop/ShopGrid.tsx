@@ -58,7 +58,7 @@ export default function ShopGrid({ photos }: { photos: Photo[] }) {
 
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-display text-xl font-light text-neutral-900 dark:text-white">
+                <p className="font-display text-xl font-light text-neutral-900">
                   {photo.title || capitalize(photo.category)}
                 </p>
                 <p className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 mt-0.5">
@@ -71,7 +71,7 @@ export default function ShopGrid({ photos }: { photos: Photo[] }) {
                 )}
               </div>
               <div className="text-right shrink-0">
-                <p className="font-display text-2xl font-light text-neutral-900 dark:text-white">
+                <p className="font-display text-2xl font-light text-neutral-900">
                   ${photo.price}
                 </p>
                 <button
@@ -97,7 +97,7 @@ export default function ShopGrid({ photos }: { photos: Photo[] }) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl"
+            className="bg-white rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl"
           >
             <div className="relative aspect-[4/3]">
               <Image

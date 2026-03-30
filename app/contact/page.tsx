@@ -12,7 +12,7 @@ const fadeUp = (delay = 0) => ({
 });
 
 const inputClass =
-  "w-full font-body text-sm border-0 border-b border-neutral-200 dark:border-neutral-700 bg-transparent py-3 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-white transition-colors duration-200";
+  "w-full font-body text-sm border-0 border-b border-neutral-200 bg-transparent py-3 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 transition-colors duration-200";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -36,7 +36,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 min-h-screen">
+    <div className="bg-white min-h-screen">
 
       {/* ── Header ──────────────────────────────────────────── */}
       <div className="pt-28 pb-16 container mx-auto px-6 md:px-10">
@@ -52,7 +52,7 @@ export default function ContactPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-6xl md:text-8xl font-light leading-none dark:text-white"
+          className="font-display text-6xl md:text-8xl font-light leading-none"
         >
           Contact
         </motion.h1>
