@@ -9,9 +9,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Category is required" }, { status: 400 });
   }
 
-  // Sanitize values — strip | and = to prevent breaking Cloudinary context format
+  // Sanitize: strip non-ASCII (emojis, smart quotes, etc) + chars that break context format
   const safe = (v: unknown) =>
-    String(v ?? "").replace(/[|=]/g, " ").trim();
+    String(v ?? "")
+      .replace(/[^\x20-\x7E]/g, "")  // keep only printable ASCII
+      .replace(/[|=\\]/g, " ")
+      .trim();
 
   const timestamp = Math.round(Date.now() / 1000);
   const tag = category.toLowerCase().trim();

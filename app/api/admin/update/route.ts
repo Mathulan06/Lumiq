@@ -11,7 +11,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "publicId and category are required" }, { status: 400 });
   }
 
-  const safe = (v: string) => (v ?? "").replace(/[|=]/g, " ").trim();
+  const safe = (v: string) =>
+    String(v ?? "")
+      .replace(/[^\x20-\x7E]/g, "")  // keep only printable ASCII
+      .replace(/[|=\\]/g, " ")
+      .trim();
 
   const context = `title=${safe(title)}|description=${safe(description)}|price=${price ?? 0}`;
   const tag = category.toLowerCase().trim();
