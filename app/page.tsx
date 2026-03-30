@@ -15,7 +15,6 @@ export default async function HomePage() {
     getFeaturedPhotos().catch(() => []),
   ]);
 
-  // Fall back to most recent photos if no hero is set
   const heroSlides = heroPhotos.length > 0 ? heroPhotos : photos.slice(0, 1);
   const recent = photos.slice(0, 5);
   const strip = photos.slice(0, 6);
@@ -27,7 +26,7 @@ export default async function HomePage() {
       <HeroSlideshow photos={heroSlides} />
 
       {/* ── MARQUEE STRIP ────────────────────────────────────── */}
-      <div className="bg-neutral-900 py-4 overflow-hidden border-y border-neutral-800">
+      <div className="bg-neutral-900 dark:bg-black py-4 overflow-hidden border-y border-neutral-800">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
             <span key={i} className="inline-flex items-center gap-6 px-6">
@@ -42,7 +41,7 @@ export default async function HomePage() {
 
       {/* ── RECENT COLLECTION ────────────────────────────────── */}
       {recent.length > 0 && (
-        <section className="py-28 bg-white">
+        <section className="py-28 bg-white dark:bg-neutral-900">
           <div className="container mx-auto px-6 md:px-12">
             <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
               <div>
@@ -55,7 +54,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/gallery"
-                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
+                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 dark:border-neutral-700 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 dark:hover:bg-white dark:hover:text-neutral-900 dark:hover:border-white transition-all duration-300"
               >
                 View All {photos.length > 0 ? `${photos.length}+` : ""} Works
               </Link>
@@ -66,7 +65,7 @@ export default async function HomePage() {
                 <Link
                   key={photo.id}
                   href={`/gallery/${photo.category}`}
-                  className={`group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 ${
+                  className={`group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl dark:shadow-black/40 transition-all duration-500 hover:-translate-y-1 ${
                     i < 3 ? "sm:col-span-2 aspect-[3/4]" : "sm:col-span-3 aspect-[4/3]"
                   }`}
                 >
@@ -96,7 +95,7 @@ export default async function HomePage() {
 
       {/* ── FEATURED COLLECTION ──────────────────────────────── */}
       {featuredPhotos.length > 0 && (
-        <section className="py-28 bg-neutral-50">
+        <section className="py-28 bg-neutral-50 dark:bg-neutral-800">
           <div className="container mx-auto px-6 md:px-12">
             <div className="flex items-end justify-between mb-14 flex-wrap gap-6">
               <div>
@@ -109,7 +108,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/gallery"
-                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
+                className="font-body text-xs tracking-[0.2em] uppercase text-neutral-400 border border-neutral-200 dark:border-neutral-600 rounded-full px-6 py-2.5 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 dark:hover:bg-white dark:hover:text-neutral-900 dark:hover:border-white transition-all duration-300"
               >
                 Browse Gallery
               </Link>
@@ -120,7 +119,7 @@ export default async function HomePage() {
                 <Link
                   key={photo.id}
                   href={`/gallery/${photo.category}`}
-                  className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 aspect-[3/4]"
+                  className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-2xl dark:shadow-black/40 transition-all duration-500 hover:-translate-y-1 aspect-[3/4]"
                 >
                   <Image
                     src={photo.thumbnailUrl}
@@ -146,9 +145,9 @@ export default async function HomePage() {
       )}
 
       {/* ── STATS ROW ────────────────────────────────────────── */}
-      <section className="py-16 bg-neutral-50 border-y border-neutral-100">
+      <section className="py-16 bg-neutral-50 dark:bg-neutral-800 border-y border-neutral-100 dark:border-neutral-700">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-200">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-200 dark:divide-neutral-700">
             {[
               { number: String(photos.length || "—"), label: "Photos" },
               { number: String(categories.length || "—"), label: "Categories" },
@@ -156,7 +155,7 @@ export default async function HomePage() {
               { number: "1", label: "Photographer" },
             ].map((stat) => (
               <div key={stat.label} className="text-center py-4 px-4">
-                <p className="font-display text-5xl md:text-6xl font-light text-neutral-900 mb-2">
+                <p className="font-display text-5xl md:text-6xl font-light text-neutral-900 dark:text-white mb-2">
                   {stat.number}
                 </p>
                 <p className="font-body text-[10px] tracking-[0.25em] uppercase text-neutral-400">
@@ -190,7 +189,7 @@ export default async function HomePage() {
       )}
 
       {/* ── QUOTE ────────────────────────────────────────────── */}
-      <section className="relative py-32 bg-neutral-900 overflow-hidden">
+      <section className="relative py-32 bg-neutral-900 dark:bg-black overflow-hidden">
         <div className="relative container mx-auto px-6 max-w-4xl text-center">
           <p className="font-display text-3xl md:text-5xl font-light leading-relaxed text-white/90 italic">
             "Light is everything. It shapes mood,

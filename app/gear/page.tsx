@@ -60,7 +60,7 @@ const fadeUp = (delay = 0) => ({
 
 export default function GearPage() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-neutral-900 min-h-screen">
 
       {/* ── Header ────────────────────────────────────────────── */}
       <div className="pt-28 pb-16 container mx-auto px-6 md:px-10">
@@ -76,7 +76,7 @@ export default function GearPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-6xl md:text-8xl font-light leading-none"
+          className="font-display text-6xl md:text-8xl font-light leading-none dark:text-white"
         >
           My Gear
         </motion.h1>
@@ -126,11 +126,11 @@ export default function GearPage() {
             <motion.div
               key={section.title}
               {...fadeUp(si * 0.08)}
-              className="bg-neutral-50 rounded-2xl p-7 hover:bg-neutral-100 transition-colors duration-300"
+              className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-7 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors duration-300"
             >
               {/* Card header */}
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-9 h-9 rounded-full bg-neutral-200 flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-600 flex items-center justify-center flex-shrink-0">
                   <section.icon size={15} className="text-neutral-600" />
                 </div>
                 <h3 className="font-body text-xs tracking-[0.18em] uppercase text-neutral-500 font-medium">
@@ -144,9 +144,9 @@ export default function GearPage() {
                   <motion.div
                     key={item.name}
                     {...fadeUp(si * 0.08 + ii * 0.05)}
-                    className="py-3 border-b border-neutral-200 last:border-0"
+                    className="py-3 border-b border-neutral-200 dark:border-neutral-700 last:border-0"
                   >
-                    <p className="font-display text-lg font-light text-neutral-900 mb-0.5">
+                    <p className="font-display text-lg font-light text-neutral-900 dark:text-white mb-0.5">
                       {item.name}
                     </p>
                     <p className="font-body text-xs text-neutral-400 leading-relaxed">

@@ -13,7 +13,7 @@ const fadeUp = (delay = 0) => ({
 
 export default function AboutPage() {
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-neutral-900 min-h-screen">
 
       {/* ── Header ────────────────────────────────────────────── */}
       <div className="pt-28 pb-16 container mx-auto px-6 md:px-10">
@@ -29,7 +29,7 @@ export default function AboutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-6xl md:text-8xl font-light leading-none"
+          className="font-display text-6xl md:text-8xl font-light leading-none dark:text-white"
         >
           About Me
         </motion.h1>
@@ -66,7 +66,7 @@ export default function AboutPage() {
 
             <motion.h2
               {...fadeUp(0.15)}
-              className="font-display text-4xl md:text-5xl font-light leading-snug"
+              className="font-display text-4xl md:text-5xl font-light leading-snug dark:text-white"
             >
               Chasing light,<br />
               <em>one frame at a time.</em>
@@ -92,9 +92,9 @@ export default function AboutPage() {
             {/* Pull quote */}
             <motion.blockquote
               {...fadeUp(0.46)}
-              className="border-l-2 border-neutral-900 pl-5 py-1"
+              className="border-l-2 border-neutral-900 dark:border-white pl-5 py-1"
             >
-              <p className="font-display text-xl font-light italic leading-relaxed text-neutral-700">
+              <p className="font-display text-xl font-light italic leading-relaxed text-neutral-700 dark:text-neutral-300">
                 &quot;Every frame is a decision — what to include, what to leave out, and where
                 the light falls.&quot;
               </p>

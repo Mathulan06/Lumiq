@@ -9,12 +9,18 @@
     --border: 0 0% 88%;
   }
 
+  .dark {
+    --background: 0 0% 9%;
+    --foreground: 0 0% 95%;
+    --border: 0 0% 18%;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-white text-neutral-900 font-body antialiased;
+    @apply bg-background text-foreground font-body antialiased;
   }
 
   html {
