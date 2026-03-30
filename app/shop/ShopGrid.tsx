@@ -7,7 +7,7 @@ import { ShoppingBag, MessageCircle } from "lucide-react";
 import type { Photo } from "@/lib/types";
 import { capitalize } from "@/lib/utils";
 
-const WHATSAPP_NUMBER = "60123456789"; // Replace with your actual WhatsApp number
+const WHATSAPP_NUMBER = "94774988686";
 
 export default function ShopGrid({ photos }: { photos: Photo[] }) {
   const [selected, setSelected] = useState<Photo | null>(null);
