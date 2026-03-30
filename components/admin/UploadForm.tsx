@@ -47,16 +47,37 @@ export default function UploadForm({ existingCategories, onSuccess }: Props) {
     }
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("category", effectiveCategory.trim());
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("price", price || "0");
 
     try {
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error(await res.text());
+      // Step 1: get a signed upload URL from our server (keeps API secret safe)
+      const sigRes = await fetch("/api/upload-signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: effectiveCategory.trim(),
+          title,
+          description,
+          price: price || "0",
+        }),
+      });
+      if (!sigRes.ok) throw new Error("Failed to get upload signature");
+      const sig = await sigRes.json();
+
+      // Step 2: upload the file directly to Cloudinary (bypasses Vercel size limits)
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("signature", sig.signature);
+      formData.append("timestamp", sig.timestamp);
+      formData.append("api_key", sig.apiKey);
+      formData.append("folder", "lumiq");
+      formData.append("tags", sig.tags);
+      formData.append("context", sig.context);
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
+        { method: "POST", body: formData }
+      );
+      if (!uploadRes.ok) throw new Error("Cloudinary upload failed");
       toast.success("Photo uploaded successfully!");
       // Reset form
       setFile(null);

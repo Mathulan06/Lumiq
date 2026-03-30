@@ -6,7 +6,7 @@ const secret = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "lumiq-fallback-secret-change-in-production"
 );
 
-const PROTECTED = ["/admin/dashboard", "/api/upload", "/api/admin/delete"];
+const PROTECTED = ["/admin/dashboard", "/api/upload", "/api/admin/delete", "/api/upload-signature"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -34,5 +34,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/dashboard", "/api/upload", "/api/admin/:path*"],
+  matcher: ["/admin/dashboard", "/api/upload", "/api/upload-signature", "/api/admin/:path*"],
 };
