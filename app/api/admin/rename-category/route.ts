@@ -18,29 +18,42 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Find all photos with the old category tag
+    // Get all photos with the old tag (include their full tag list)
     const result = await cloudinary.search
       .expression(`tags=${oldTag} AND folder=lumiq`)
+      .with_field("tags")
       .max_results(500)
       .execute();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const publicIds = (result.resources ?? []).map((r: any) => r.public_id);
+    const resources: any[] = result.resources ?? [];
 
-    if (publicIds.length === 0) {
+    if (resources.length === 0) {
       return NextResponse.json({ error: "No photos found with that category" }, { status: 404 });
     }
 
-    // Swap the tag on all photos at once
-    await cloudinary.uploader.add_tag(newTag, publicIds);
-    await cloudinary.uploader.remove_tag(oldTag, publicIds);
+    // Update each photo: swap old tag for new, keep all other tags (_hero, _featured, etc.)
+    await Promise.all(
+      resources.map((r) => {
+        const newTags = (r.tags as string[])
+          .filter((t) => t !== oldTag)
+          .concat(newTag)
+          .join(",");
+
+        return cloudinary.api.update(r.public_id, {
+          tags: newTags,
+          type: "upload",
+          resource_type: "image",
+        });
+      })
+    );
 
     revalidatePath("/", "page");
     revalidatePath("/gallery", "page");
     revalidatePath("/gallery/[category]", "page");
     revalidatePath("/shop", "page");
 
-    return NextResponse.json({ success: true, updated: publicIds.length });
+    return NextResponse.json({ success: true, updated: resources.length });
   } catch (err) {
     console.error("Rename category error:", err);
     return NextResponse.json({ error: "Rename failed" }, { status: 500 });
