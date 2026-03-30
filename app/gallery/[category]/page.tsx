@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { getPhotos } from "@/lib/cloudinary";
 import { capitalize } from "@/lib/utils";
 import CategoryGallery from "./CategoryGallery";
@@ -11,11 +10,8 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const photos = await getPhotos(category).catch(() => []);
-
-  if (photos.length === 0) {
-    notFound();
-  }
+  const decoded = decodeURIComponent(category);
+  const photos = await getPhotos(decoded).catch(() => []);
 
   return (
     <div className="pt-28 pb-32 md:pb-16 min-h-screen bg-white">
@@ -25,7 +21,7 @@ export default async function CategoryPage({
             Gallery
           </p>
           <h1 className="font-display text-5xl md:text-7xl font-light">
-            <em>{capitalize(category)}</em>
+            <em>{capitalize(decoded)}</em>
           </h1>
           <p className="font-body text-sm text-neutral-400 mt-3">
             {photos.length} photograph{photos.length !== 1 ? "s" : ""}
