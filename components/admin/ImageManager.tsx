@@ -28,6 +28,9 @@ export default function ImageManager() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState<EditState | null>(null);
+  const [renamingCat, setRenamingCat] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [renaming, setRenaming] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -132,6 +135,31 @@ export default function ImageManager() {
       toast.error("Failed to update photo");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function renameCategory() {
+    if (!renamingCat || !renameValue.trim()) return;
+    const newCat = renameValue.toLowerCase().trim();
+    if (newCat === renamingCat) { setRenamingCat(null); return; }
+    setRenaming(true);
+    try {
+      const res = await fetch("/api/admin/rename-category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldCategory: renamingCat, newCategory: newCat }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast.success(`Renamed "${renamingCat}" → "${newCat}" (${data.updated} photos)`);
+      if (activeCategory === renamingCat) setActiveCategory(newCat);
+      setRenamingCat(null);
+      setRenameValue("");
+      fetchData();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Rename failed");
+    } finally {
+      setRenaming(false);
     }
   }
 
@@ -358,21 +386,73 @@ export default function ImageManager() {
 
       {/* Category filter tabs */}
       {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {["all", ...categories].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`font-body text-xs tracking-[0.15em] uppercase px-4 py-2 rounded-full border transition-all duration-200 ${
-                activeCategory === cat
-                  ? "bg-neutral-900 text-white border-neutral-900"
-                  : "bg-white text-neutral-400 border-neutral-200 hover:border-neutral-400"
-              }`}
-            >
-              {cat === "all"
-                ? `All (${photos.length})`
-                : `${capitalize(cat)} (${photos.filter((p) => p.category === cat).length})`}
-            </button>
+        <div className="flex flex-wrap gap-2 items-center">
+          {/* All tab */}
+          <button
+            onClick={() => setActiveCategory("all")}
+            className={`font-body text-xs tracking-[0.15em] uppercase px-4 py-2 rounded-full border transition-all duration-200 ${
+              activeCategory === "all"
+                ? "bg-neutral-900 text-white border-neutral-900"
+                : "bg-white text-neutral-400 border-neutral-200 hover:border-neutral-400"
+            }`}
+          >
+            All ({photos.length})
+          </button>
+
+          {categories.map((cat) => (
+            <div key={cat} className="flex items-center gap-1">
+              {renamingCat === cat ? (
+                /* Inline rename input */
+                <div className="flex items-center gap-1">
+                  <input
+                    autoFocus
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") renameCategory();
+                      if (e.key === "Escape") { setRenamingCat(null); setRenameValue(""); }
+                    }}
+                    className="font-body text-xs border border-neutral-900 rounded-full px-3 py-1.5 w-28 focus:outline-none"
+                    placeholder={capitalize(cat)}
+                    disabled={renaming}
+                  />
+                  <button
+                    onClick={renameCategory}
+                    disabled={renaming}
+                    className="p-1.5 rounded-full bg-neutral-900 text-white hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                  >
+                    <Check size={11} />
+                  </button>
+                  <button
+                    onClick={() => { setRenamingCat(null); setRenameValue(""); }}
+                    className="p-1.5 rounded-full border border-neutral-200 text-neutral-400 hover:border-neutral-400 transition-colors"
+                  >
+                    <X size={11} />
+                  </button>
+                </div>
+              ) : (
+                /* Normal tab + rename button */
+                <>
+                  <button
+                    onClick={() => setActiveCategory(cat)}
+                    className={`font-body text-xs tracking-[0.15em] uppercase px-4 py-2 rounded-full border transition-all duration-200 ${
+                      activeCategory === cat
+                        ? "bg-neutral-900 text-white border-neutral-900"
+                        : "bg-white text-neutral-400 border-neutral-200 hover:border-neutral-400"
+                    }`}
+                  >
+                    {capitalize(cat)} ({photos.filter((p) => p.category === cat).length})
+                  </button>
+                  <button
+                    onClick={() => { setRenamingCat(cat); setRenameValue(cat); }}
+                    className="p-1.5 rounded-full text-neutral-300 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
+                    title={`Rename "${cat}"`}
+                  >
+                    <Pencil size={11} />
+                  </button>
+                </>
+              )}
+            </div>
           ))}
         </div>
       )}
