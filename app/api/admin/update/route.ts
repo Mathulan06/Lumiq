@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { cloudinary } from "@/lib/cloudinary";
 
 // Protected by middleware
@@ -22,6 +23,10 @@ export async function POST(request: NextRequest) {
       type: "upload",
       resource_type: "image",
     });
+    revalidatePath("/", "page");
+    revalidatePath("/gallery", "page");
+    revalidatePath("/gallery/[category]", "page");
+    revalidatePath("/shop", "page");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Cloudinary update error:", err);

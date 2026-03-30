@@ -81,6 +81,8 @@ export default function UploadForm({ existingCategories, onSuccess }: Props) {
         const errBody = await uploadRes.json().catch(() => ({}));
         throw new Error(errBody?.error?.message ?? "Cloudinary upload failed");
       }
+      // Revalidate public pages so new photo appears immediately
+      await fetch("/api/revalidate", { method: "POST" });
       toast.success("Photo uploaded successfully!");
       // Reset form
       setFile(null);

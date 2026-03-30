@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { deletePhoto } from "@/lib/cloudinary";
 
 // Middleware already guards /api/admin/delete
@@ -11,6 +12,10 @@ export async function POST(request: NextRequest) {
 
   try {
     await deletePhoto(publicId);
+    revalidatePath("/", "page");
+    revalidatePath("/gallery", "page");
+    revalidatePath("/gallery/[category]", "page");
+    revalidatePath("/shop", "page");
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("DELETE photo error:", err);
