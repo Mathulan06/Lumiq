@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, Images, ShoppingBag, User, Mail } from "lucide-react";
+import { Home, Images, ShoppingBag, User, Mail, Settings2 } from "lucide-react";
 
 const links = [
   { to: "/",        label: "Home",    icon: Home        },
   { to: "/gallery", label: "Gallery", icon: Images      },
   { to: "/shop",    label: "Shop",    icon: ShoppingBag },
   { to: "/about",   label: "About",   icon: User        },
+  { to: "/gear",    label: "Gear",    icon: Settings2   },
   { to: "/contact", label: "Contact", icon: Mail        },
 ];
 

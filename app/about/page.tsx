@@ -1,21 +1,132 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
+
 export default function AboutPage() {
   return (
-    <div className="pt-28 pb-32 md:pb-16 min-h-screen bg-white">
-      <div className="container mx-auto px-6 md:px-12 max-w-2xl">
-        <p className="font-body text-[10px] tracking-[0.35em] uppercase text-neutral-400 mb-3">
-          The Photographer
-        </p>
-        <h1 className="font-display text-5xl md:text-7xl font-light mb-10">
-          About <em>Me</em>
-        </h1>
-        <p className="font-display text-2xl font-light leading-relaxed text-neutral-600 italic">
-          "I chase light. Every sunrise, every golden hour — there's always a frame worth capturing."
-        </p>
-        <p className="font-body text-sm text-neutral-500 mt-8 leading-relaxed">
-          Lumiq is a photography portfolio showcasing landscapes, nature, street, and portrait work.
-          Every image is a story told through light and composition.
-        </p>
+    <div className="bg-white min-h-screen">
+
+      {/* ── Header ────────────────────────────────────────────── */}
+      <div className="pt-28 pb-16 container mx-auto px-6 md:px-10">
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="font-body text-[10px] tracking-[0.4em] uppercase text-neutral-400 mb-4"
+        >
+          The person behind the lens
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display text-6xl md:text-8xl font-light leading-none"
+        >
+          About Me
+        </motion.h1>
       </div>
+
+      {/* ── Photo + Text ──────────────────────────────────────── */}
+      <div className="container mx-auto px-6 md:px-10">
+        <div className="grid md:grid-cols-5 gap-8 md:gap-16 items-start">
+
+          {/* Photo — takes 3/5 width */}
+          <motion.div
+            {...fadeUp()}
+            className="md:col-span-3 overflow-hidden rounded-2xl shadow-2xl"
+          >
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="relative w-full"
+              style={{ maxHeight: "80vh" }}
+            >
+              <Image
+                src="/hero-3.jpg"
+                alt="Photographer"
+                width={900}
+                height={1200}
+                className="w-full object-cover"
+                style={{ maxHeight: "80vh", objectFit: "cover" }}
+              />
+            </motion.div>
+          </motion.div>
+
+          {/* Text — takes 2/5 width */}
+          <div className="md:col-span-2 space-y-8 md:pt-10 md:sticky md:top-28">
+
+            <motion.h2
+              {...fadeUp(0.15)}
+              className="font-display text-4xl md:text-5xl font-light leading-snug"
+            >
+              Chasing light,<br />
+              <em>one frame at a time.</em>
+            </motion.h2>
+
+            <motion.div {...fadeUp(0.25)} className="w-10 h-px bg-neutral-200" />
+
+            <motion.p {...fadeUp(0.3)} className="font-body text-sm text-neutral-500 leading-loose">
+              Photography has been my language for over a decade. What began as a childhood
+              fascination with my father&apos;s old film camera has evolved into a lifelong pursuit
+              of visual storytelling. I believe every moment holds a story — it just takes
+              patience, perspective, and the right light to reveal it.
+            </motion.p>
+
+            <motion.p {...fadeUp(0.38)} className="font-body text-sm text-neutral-500 leading-loose">
+              My philosophy is simple:{" "}
+              <span className="text-neutral-900 font-medium">light is everything.</span>{" "}
+              It shapes mood, depth, and emotion. Whether capturing the raw energy of a
+              bustling street market or the quiet solitude of a mountain sunrise, I strive
+              to find that perfect interplay between shadow and illumination.
+            </motion.p>
+
+            {/* Pull quote */}
+            <motion.blockquote
+              {...fadeUp(0.46)}
+              className="border-l-2 border-neutral-900 pl-5 py-1"
+            >
+              <p className="font-display text-xl font-light italic leading-relaxed text-neutral-700">
+                &quot;Every frame is a decision — what to include, what to leave out, and where
+                the light falls.&quot;
+              </p>
+            </motion.blockquote>
+
+            {/* Tags */}
+            <motion.div {...fadeUp(0.54)} className="flex flex-wrap gap-2 pt-2">
+              {["Landscape", "Nature", "Street", "iPhone Photography"].map((tag) => (
+                <span
+                  key={tag}
+                  className="font-body text-[10px] tracking-[0.15em] uppercase px-4 py-1.5 rounded-full bg-neutral-100 text-neutral-500"
+                >
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.div {...fadeUp(0.62)} className="pt-2">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-3 font-body text-xs tracking-[0.2em] uppercase bg-neutral-900 text-white px-7 py-3.5 rounded-full hover:bg-neutral-700 transition-all duration-300 hover:gap-4"
+              >
+                Get in Touch <span>→</span>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom spacer ─────────────────────────────────────── */}
+      <div className="pb-32 md:pb-24" />
     </div>
   );
 }
