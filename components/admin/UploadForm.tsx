@@ -77,7 +77,10 @@ export default function UploadForm({ existingCategories, onSuccess }: Props) {
         `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
         { method: "POST", body: formData }
       );
-      if (!uploadRes.ok) throw new Error("Cloudinary upload failed");
+      if (!uploadRes.ok) {
+        const errBody = await uploadRes.json().catch(() => ({}));
+        throw new Error(errBody?.error?.message ?? "Cloudinary upload failed");
+      }
       toast.success("Photo uploaded successfully!");
       // Reset form
       setFile(null);
@@ -89,7 +92,8 @@ export default function UploadForm({ existingCategories, onSuccess }: Props) {
       setPrice("");
       onSuccess();
     } catch (err) {
-      toast.error("Upload failed — please try again");
+      const msg = err instanceof Error ? err.message : "Upload failed";
+      toast.error(msg);
       console.error(err);
     } finally {
       setUploading(false);

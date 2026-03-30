@@ -3,11 +3,20 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, RefreshCw, Images } from "lucide-react";
+import { Trash2, RefreshCw, Images, Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import UploadForm from "./UploadForm";
 import type { Photo } from "@/lib/types";
 import { capitalize } from "@/lib/utils";
+
+interface EditState {
+  photo: Photo;
+  category: string;
+  customCategory: string;
+  title: string;
+  description: string;
+  price: string;
+}
 
 export default function ImageManager() {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -15,6 +24,8 @@ export default function ImageManager() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState<EditState | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -48,10 +59,71 @@ export default function ImageManager() {
       if (!res.ok) throw new Error();
       toast.success("Photo deleted");
       setPhotos((prev) => prev.filter((p) => p.publicId !== photo.publicId));
+      if (editing?.photo.publicId === photo.publicId) setEditing(null);
     } catch {
       toast.error("Failed to delete photo");
     } finally {
       setDeleting(null);
+    }
+  }
+
+  function openEdit(photo: Photo) {
+    setEditing({
+      photo,
+      category: photo.category,
+      customCategory: "",
+      title: photo.title,
+      description: photo.description,
+      price: photo.price > 0 ? String(photo.price) : "",
+    });
+  }
+
+  async function saveEdit() {
+    if (!editing) return;
+    const effectiveCategory =
+      editing.category === "__new__" ? editing.customCategory : editing.category;
+    if (!effectiveCategory.trim()) {
+      toast.error("Category is required");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          publicId: editing.photo.publicId,
+          category: effectiveCategory.trim(),
+          title: editing.title,
+          description: editing.description,
+          price: editing.price || "0",
+        }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Photo updated");
+      // Update local state immediately
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.publicId === editing.photo.publicId
+            ? {
+                ...p,
+                category: effectiveCategory.trim().toLowerCase(),
+                title: editing.title,
+                description: editing.description,
+                price: parseFloat(editing.price || "0"),
+              }
+            : p
+        )
+      );
+      setEditing(null);
+      // Refresh categories in case a new one was added
+      fetch("/api/categories")
+        .then((r) => r.json())
+        .then((d) => { if (Array.isArray(d)) setCategories(d); });
+    } catch {
+      toast.error("Failed to update photo");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -60,10 +132,158 @@ export default function ImageManager() {
       ? photos
       : photos.filter((p) => p.category === activeCategory);
 
+  const inputClass =
+    "w-full border border-neutral-200 rounded-xl px-3 py-2 font-body text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900";
+
   return (
     <div className="space-y-10">
       {/* Upload form */}
       <UploadForm existingCategories={categories} onSuccess={fetchData} />
+
+      {/* Edit modal */}
+      <AnimatePresence>
+        {editing && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEditing(null)}
+              className="fixed inset-0 bg-black/40 z-40"
+            />
+            {/* Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed bottom-0 left-0 right-0 md:inset-0 md:flex md:items-center md:justify-center z-50 pointer-events-none"
+            >
+              <div className="bg-white rounded-t-3xl md:rounded-2xl shadow-2xl p-6 w-full md:max-w-lg pointer-events-auto">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-display text-2xl font-light">Edit Photo</h3>
+                  <button
+                    onClick={() => setEditing(null)}
+                    className="p-2 rounded-full hover:bg-neutral-100 transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Thumbnail */}
+                <div className="relative w-full h-32 rounded-xl overflow-hidden mb-5 bg-neutral-100">
+                  <Image
+                    src={editing.photo.thumbnailUrl}
+                    alt={editing.photo.title || editing.photo.category}
+                    fill
+                    className="object-cover"
+                    sizes="480px"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  {/* Category */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-body text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1.5">
+                        Category *
+                      </label>
+                      <select
+                        value={editing.category}
+                        onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                        className={inputClass}
+                      >
+                        {categories.map((c) => (
+                          <option key={c} value={c}>{capitalize(c)}</option>
+                        ))}
+                        <option value="__new__">+ New category</option>
+                      </select>
+                    </div>
+                    {editing.category === "__new__" && (
+                      <div>
+                        <label className="block font-body text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1.5">
+                          New Category *
+                        </label>
+                        <input
+                          type="text"
+                          value={editing.customCategory}
+                          onChange={(e) => setEditing({ ...editing, customCategory: e.target.value })}
+                          placeholder="e.g. wedding"
+                          className={inputClass}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Title + Price */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-body text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1.5">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={editing.title}
+                        onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+                        placeholder="Photo title"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-body text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1.5">
+                        Price ($)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={editing.price}
+                        onChange={(e) => setEditing({ ...editing, price: e.target.value })}
+                        placeholder="0 = not for sale"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block font-body text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1.5">
+                      Description
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={editing.description}
+                      onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                      placeholder="Optional description…"
+                      className={`${inputClass} resize-none`}
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-1">
+                    <button
+                      onClick={saveEdit}
+                      disabled={saving}
+                      className="flex-1 flex items-center justify-center gap-2 bg-neutral-900 text-white font-body text-xs tracking-[0.2em] uppercase py-3 rounded-xl hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                    >
+                      <Check size={13} />
+                      {saving ? "Saving…" : "Save Changes"}
+                    </button>
+                    <button
+                      onClick={() => setEditing(null)}
+                      className="px-5 border border-neutral-200 font-body text-xs tracking-[0.2em] uppercase rounded-xl hover:bg-neutral-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Library header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -99,7 +319,9 @@ export default function ImageManager() {
                   : "bg-white text-neutral-400 border-neutral-200 hover:border-neutral-400"
               }`}
             >
-              {cat === "all" ? `All (${photos.length})` : `${capitalize(cat)} (${photos.filter((p) => p.category === cat).length})`}
+              {cat === "all"
+                ? `All (${photos.length})`
+                : `${capitalize(cat)} (${photos.filter((p) => p.category === cat).length})`}
             </button>
           ))}
         </div>
@@ -142,15 +364,28 @@ export default function ImageManager() {
                   className="object-cover"
                 />
 
-                {/* Hover info + delete */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
-                  <button
-                    onClick={() => deletePhoto(photo)}
-                    disabled={deleting === photo.publicId}
-                    className="self-end bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors disabled:opacity-50"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3">
+                  {/* Top actions */}
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => openEdit(photo)}
+                      className="bg-white/20 hover:bg-white/40 text-white p-2 rounded-full transition-colors backdrop-blur-sm"
+                      title="Edit"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      onClick={() => deletePhoto(photo)}
+                      disabled={deleting === photo.publicId}
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors disabled:opacity-50"
+                      title="Delete"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+
+                  {/* Bottom info */}
                   <div>
                     {photo.title && (
                       <p className="font-display text-base font-light text-white truncate">

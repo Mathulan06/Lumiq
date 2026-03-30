@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cloudinary } from "@/lib/cloudinary";
 
-// Protected by middleware (same as /api/upload)
+// Protected by middleware
 export async function POST(request: NextRequest) {
   const { category, title, description, price } = await request.json();
 
+  if (!category?.trim()) {
+    return NextResponse.json({ error: "Category is required" }, { status: 400 });
+  }
+
+  // Sanitize values — strip | and = to prevent breaking Cloudinary context format
+  const safe = (v: unknown) =>
+    String(v ?? "").replace(/[|=]/g, " ").trim();
+
   const timestamp = Math.round(Date.now() / 1000);
+  const tag = category.toLowerCase().trim();
+  const context = `title=${safe(title)}|description=${safe(description)}|price=${safe(price) || "0"}`;
+
   const paramsToSign = {
-    context: `title=${title ?? ""}|description=${description ?? ""}|price=${price ?? 0}`,
+    context,
     folder: "lumiq",
-    tags: category?.toLowerCase().trim(),
+    tags: tag,
     timestamp,
   };
 
@@ -23,6 +34,8 @@ export async function POST(request: NextRequest) {
     timestamp,
     apiKey: process.env.CLOUDINARY_API_KEY,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    ...paramsToSign,
+    context,
+    folder: "lumiq",
+    tags: tag,
   });
 }
