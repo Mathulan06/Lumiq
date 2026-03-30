@@ -1,65 +1,30 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPhotos, getCategories, getHeroPhoto, getFeaturedPhotos } from "@/lib/cloudinary";
+import { getPhotos, getCategories, getHeroPhotos, getFeaturedPhotos } from "@/lib/cloudinary";
+import HeroSlideshow from "@/components/HeroSlideshow";
 
 const MARQUEE_ITEMS = ["Landscape", "Portrait", "Nature", "Street", "Light", "Story"];
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [photos, categories, heroPhoto, featuredPhotos] = await Promise.all([
+  const [photos, categories, heroPhotos, featuredPhotos] = await Promise.all([
     getPhotos().catch(() => []),
     getCategories().catch(() => []),
-    getHeroPhoto().catch(() => null),
+    getHeroPhotos().catch(() => []),
     getFeaturedPhotos().catch(() => []),
   ]);
 
-  const hero = heroPhoto ?? photos[0] ?? null;
+  // Fall back to most recent photos if no hero is set
+  const heroSlides = heroPhotos.length > 0 ? heroPhotos : photos.slice(0, 1);
   const recent = photos.slice(0, 5);
   const strip = photos.slice(0, 6);
 
   return (
     <div className="overflow-x-hidden">
 
-      {/* ── HERO ─────────────────────────────────────────────── */}
-      <section className="relative h-screen min-h-[600px] bg-neutral-900 flex items-end pb-20 px-8 md:px-16">
-        {hero && (
-          <Image
-            src={hero.url}
-            alt="Hero"
-            fill
-            priority
-            className="object-cover opacity-70"
-            sizes="100vw"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-
-        <div className="relative z-10 pointer-events-none">
-          <p className="font-body text-[10px] tracking-[0.4em] uppercase text-white/50 mb-5">
-            Photography Portfolio — Lumiq
-          </p>
-          <h1 className="font-display text-5xl sm:text-7xl md:text-[6.5rem] font-light leading-[1.0] text-white mb-7 max-w-3xl">
-            Capturing Light.
-            <br />
-            <em className="italic text-white/80">Telling Stories.</em>
-          </h1>
-          <div className="flex flex-wrap items-center gap-5 pointer-events-auto">
-            <Link
-              href="/gallery"
-              className="font-body text-[11px] tracking-[0.25em] uppercase bg-white text-black px-8 py-3 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              View Gallery
-            </Link>
-            <Link
-              href="/contact"
-              className="font-body text-[11px] tracking-[0.25em] uppercase text-white/60 hover:text-white transition-colors duration-300"
-            >
-              Contact Me →
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* ── HERO SLIDESHOW ───────────────────────────────────── */}
+      <HeroSlideshow photos={heroSlides} />
 
       {/* ── MARQUEE STRIP ────────────────────────────────────── */}
       <div className="bg-neutral-900 py-4 overflow-hidden border-y border-neutral-800">

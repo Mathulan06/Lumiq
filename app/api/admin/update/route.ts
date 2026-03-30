@@ -20,19 +20,19 @@ export async function POST(request: NextRequest) {
   const tags = [tag, ...(isHero ? ["_hero"] : []), ...(isFeatured ? ["_featured"] : [])];
 
   try {
-    // If setting as hero, remove _hero from any other photo first
+    // If setting as hero, enforce max 3 — remove oldest if already at limit
     if (isHero) {
       const existing = await cloudinary.search
         .expression("tags=_hero AND folder=lumiq")
+        .sort_by("created_at", "asc")
         .max_results(10)
         .execute();
-      const others = (existing.resources ?? []).filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (r: any) => r.public_id !== publicId
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ).map((r: any) => r.public_id);
-      if (others.length > 0) {
-        await cloudinary.uploader.remove_tag("_hero", others);
+      const others = (existing.resources ?? []).filter((r: any) => r.public_id !== publicId);
+      if (others.length >= 3) {
+        // Remove the oldest to stay within 3
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await cloudinary.uploader.remove_tag("_hero", [others[0].public_id]);
       }
     }
 

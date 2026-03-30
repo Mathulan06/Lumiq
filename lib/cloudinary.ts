@@ -61,16 +61,17 @@ export async function getPhotos(category?: string): Promise<Photo[]> {
   return (result.resources ?? []).map(toPhoto);
 }
 
-/** Return the hero photo (tag: _hero), falls back to most recent */
-export async function getHeroPhoto(): Promise<Photo | null> {
+/** Return hero photos (tag: _hero), up to 3 */
+export async function getHeroPhotos(): Promise<Photo[]> {
   const result = await cloudinary.search
     .expression("tags=_hero AND folder=lumiq")
     .with_field("context")
     .with_field("tags")
-    .max_results(1)
+    .sort_by("created_at", "desc")
+    .max_results(3)
     .execute();
 
-  return result.resources?.[0] ? toPhoto(result.resources[0]) : null;
+  return (result.resources ?? []).map(toPhoto);
 }
 
 /** Return featured photos (tag: _featured) */
