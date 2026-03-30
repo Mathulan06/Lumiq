@@ -23,8 +23,10 @@ export default function ImageManager() {
         fetch("/api/images"),
         fetch("/api/categories"),
       ]);
-      setPhotos(await photosRes.json());
-      setCategories(await catsRes.json());
+      const photosData = await photosRes.json();
+      const catsData = await catsRes.json();
+      setPhotos(Array.isArray(photosData) ? photosData : []);
+      setCategories(Array.isArray(catsData) ? catsData : []);
     } catch {
       toast.error("Failed to load images");
     } finally {
