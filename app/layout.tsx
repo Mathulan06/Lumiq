@@ -23,6 +23,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Lumiq — Photography Portfolio",
   description: "Capturing light. Telling stories.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
