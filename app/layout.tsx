@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -38,6 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <Footer />
         <Toaster position="bottom-right" richColors />
+        <Analytics />
+        <SpeedInsights />
+        <GoogleAnalytics />
       </body>
     </html>
   );
